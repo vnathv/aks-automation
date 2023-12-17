@@ -1,0 +1,13 @@
+controller:
+  replicaCount: ${replica_count}
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "false"
+      service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "${subnet_id}" # Optional, specify if using a specific subnet
+    loadBalancerIP: "${load_balancer_ip}" # Specify the IP you obtained from Terraform
+  ingressClass: "nginx"
+  metrics:
+    enabled: true
+
+defaultBackend:
+  replicaCount: 1
