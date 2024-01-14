@@ -1,7 +1,7 @@
 {
     "tenantId": "",
     "subscriptionId": "",
-    "resourceGroup": "mc_vijay-aks_aks-vijay-cluster_westeurope", 
+    "resourceGroup": "", 
     "useManagedIdentityExtension": true,
     "userAssignedIdentityID": ""
-  }
+ }
