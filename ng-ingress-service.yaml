@@ -1,51 +1,40 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-app1-app2-app3
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    #kubernetes.io/ingress.class: "nginx"
+  name: ingress-cpr
+  #annotations:
+    #kubernetes.io/ingress.class: nginx  
 spec:
   ingressClassName: nginx
+  #defaultBackend:
+  #  service:
+  #    name: usermgmt-webapp-clusterip-service
+  #    port:
+  #      number: 80
   rules:
-    - host: techops.today
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /app1
             pathType: Prefix
             backend:
               service:
                 name: app1-nginx-clusterip-service
                 port: 
                   number: 80
-    - host: app2.techops.today
-      http:
-        paths:
           - path: /app2
             pathType: Prefix
             backend:
               service:
                 name: app2-nginx-clusterip-service
                 port: 
-                  number: 80
-    - host: app3.techops.today
-      http:
-        paths:
-          - path: /app3
+                  number: 80  
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: app3-nginx-clusterip-service
+                name: app1-nginx-clusterip-service
                 port: 
-                  number: 80
-  tls:
-  - hosts:
-    - app1.techops.today
-    secretName: app1.techops.today-secret           
-  - hosts:
-    -  app2.techops.today
-    secretName:  app2.techops.today-secret
-  - hosts:
-    - techops.today
-    secretName: techops.today-secret                                                        
-                     
+                  number: 80                  
+                                                 
+                  
+      

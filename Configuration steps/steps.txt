@@ -1,0 +1,1 @@
+kubectl create secret generic azure-config-file --from-file=azure.json -n vijay-ingress
