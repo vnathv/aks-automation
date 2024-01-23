@@ -10,6 +10,12 @@ resource "azurerm_role_assignment" "base" {
   principal_id         = azurerm_user_assigned_identity.base.principal_id
 }
 
+resource "azurerm_role_assignment" "contributor_dns" {
+  scope                = azurerm_resource_group.this.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.base.principal_id
+}
+
 resource "azurerm_kubernetes_cluster" "this" {
   name                = "${local.env}-${local.eks_name}"
   location            = azurerm_resource_group.this.location
@@ -55,10 +61,15 @@ resource "azurerm_kubernetes_cluster" "this" {
     }
   }
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.base.id]
+  service_principal {
+    client_id = ""
+    client_secret = "" //THIS SHOULD BE GETTING FROM KV OR SECRET SERVER
   }
+
+  # identity {
+  #   type         = "UserAssigned"
+  #   identity_ids = [azurerm_user_assigned_identity.dns_identity.id]
+  # }
 
   tags = {
     env = local.env

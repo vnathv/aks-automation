@@ -3,7 +3,7 @@ resource "helm_release" "cert_manager" {
 
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
-  namespace        = "cert-manager"
+  namespace        = "vijay-ingress"  
   create_namespace = true
   version          = "v1.13.1"
 
@@ -11,4 +11,6 @@ resource "helm_release" "cert_manager" {
     name  = "installCRDs"
     value = "true"
   }
+
+  depends_on = [ helm_release.nginx ]
 }

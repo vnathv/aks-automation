@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginxapp1-ingress-service
+  annotations:
+    cert-manager.io/cluster-issuer: production
+    #kubernetes.io/ingress.class: nginx  
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: techops.today
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app1-nginx-clusterip-service
+                port: 
+                  number: 80
+  tls:
+    - hosts:
+        - techops.today
+      secretName: techops-today
+      

@@ -1,7 +1,7 @@
 {
-    "tenantId": "",
-    "subscriptionId": "",
-    "resourceGroup": "", 
-    "useManagedIdentityExtension": true,
-    "userAssignedIdentityID": ""
- }
+  "tenantId": "",
+  "subscriptionId": "",
+  "resourceGroup": "vijay-aks-new", 
+  "aadClientId": "",
+  "aadClientSecret": "" //THIS SHOULD BE GETTING FROM KV OR SECRET SERVER
+}
