@@ -4,6 +4,7 @@ metadata:
   name: nginxapp1-ingress-service
   annotations:
     cert-manager.io/cluster-issuer: production
+    external-dns.alpha.kubernetes.io/zone: "techops.today"
     #kubernetes.io/ingress.class: nginx  
 spec:
   ingressClassName: nginx

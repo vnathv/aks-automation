@@ -1,5 +1,9 @@
 kubectl create secret generic azure-config-file --from-file=azure.json -n vijay-ingress
 
+kubectl label namespace vijay-ingress cert-manager.io/disable-validation=true
+
+#app.kubernetes.io/managed-by=Helm
+
 Get-ChildItem -Recurse -Filter *.yaml | ForEach-Object { kubectl apply -f $_.FullName --namespace vijay-ingress} 
 
 Get-ChildItem -Recurse -Filter *.yaml | ForEach-Object { kubectl delete -f $_.FullName --namespace vijay-ingress} 

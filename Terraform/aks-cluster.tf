@@ -1,39 +1,43 @@
-resource "azurerm_user_assigned_identity" "base" {
-  name                = "base"
+resource "azurerm_user_assigned_identity" "dns-aks-identity" {
+  name                = "dns-aks-identity"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
 }
 
-resource "azurerm_role_assignment" "base" {
-  scope                = azurerm_resource_group.this.id
-  role_definition_name = "Network Contributor"
-  principal_id         = azurerm_user_assigned_identity.base.principal_id
-}
+# resource "azurerm_role_assignment" "this" {
+#   scope                = azurerm_resource_group.this.id
+#   role_definition_name = "Network Contributor"
+#   principal_id         = azurerm_user_assigned_identity.this.principal_id
+# }
 
-resource "azurerm_role_assignment" "contributor_dns" {
+resource "azurerm_role_assignment" "contributor_main_resource_group" {
   scope                = azurerm_resource_group.this.id
   role_definition_name = "Contributor"
-  principal_id         = azurerm_user_assigned_identity.base.principal_id
+  principal_id         = azurerm_user_assigned_identity.dns-aks-identity.principal_id
+
+  depends_on = [ azurerm_user_assigned_identity.dns-aks-identity ]
 }
 
+# resource "azurerm_role_assignment" "contributor_node_resource_group" {
+#   scope                = data.azurerm_resource_group.node_resource_group.id
+#   role_definition_name = "Contributor"
+#   principal_id         = azurerm_user_assigned_identity.dns-aks-identity.principal_id
+
+#   depends_on = [ azurerm_user_assigned_identity.dns-aks-identity ]
+# }
+
 resource "azurerm_kubernetes_cluster" "this" {
-  name                = "${local.env}-${local.eks_name}"
+  name                = local.aks_name
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
-  dns_prefix          = "devaks1"
+  dns_prefix          = "aks-vijay"
 
-  kubernetes_version        = local.eks_version
+  kubernetes_version        = local.aks_version
   automatic_channel_upgrade = "stable"
   private_cluster_enabled   = false
-  node_resource_group       = "${local.resource_group_name}-${local.env}-${local.eks_name}"
+  node_resource_group       = "${local.resource_group_name}-node-resource-group"
 
-  # It's in Preview
-  # api_server_access_profile {
-  #   vnet_integration_enabled = true
-  #   subnet_id                = azurerm_subnet.subnet1.id
-  # }
-
-  # For production change to "Standard" 
+  
   sku_tier = "Free"
 
   oidc_issuer_enabled       = true
@@ -49,7 +53,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     name                 = "general"
     vm_size              = "Standard_D2_v2"
     vnet_subnet_id       = azurerm_subnet.subnet1.id
-    orchestrator_version = local.eks_version
+    orchestrator_version = local.aks_version
     type                 = "VirtualMachineScaleSets"
     enable_auto_scaling  = true
     node_count           = 1
@@ -61,25 +65,24 @@ resource "azurerm_kubernetes_cluster" "this" {
     }
   }
 
-  service_principal {
-    client_id = ""
-    client_secret = "" //THIS SHOULD BE GETTING FROM KV OR SECRET SERVER
-  }
-
-  # identity {
-  #   type         = "UserAssigned"
-  #   identity_ids = [azurerm_user_assigned_identity.dns_identity.id]
+  # service_principal {
+  #   client_id = ""
+  #   client_secret = "" 
   # }
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.dns-aks-identity.id]
+  }
 
   tags = {
     env = local.env
   }
-
-  lifecycle {
-    ignore_changes = [default_node_pool[0].node_count]
-  }
-
-  depends_on = [
-    azurerm_role_assignment.base
-  ]
 }
+
+# resource "kubernetes_namespace" "this" {
+#   metadata {
+#     name = local.namespace
+#   }
+#   depends_on = [azurerm_kubernetes_cluster.this]
+# }

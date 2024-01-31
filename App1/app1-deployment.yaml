@@ -5,7 +5,7 @@ metadata:
   labels:
     app: app1-nginx
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: app1-nginx
@@ -19,3 +19,8 @@ spec:
           image: vijaynath/akslearn:v2
           ports:
             - containerPort: 80
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
